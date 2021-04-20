@@ -1,4 +1,7 @@
-import data,func,random,operator
+import data
+import func
+import random
+import operator
 
 print("TEST RESULT")
 '''
@@ -8,37 +11,42 @@ print(data.distance_A["B"])
 
 print((1000/33)**2)
 '''
+
+
 class Route:
-    def __init__(self,order,length,fitness):
+    def __init__(self, order, length, fitness):
         self.order = order
-        self.length =length
+        self.length = length
         self.fitness = fitness
+
     def testPrint(self):
         print("order : "+str(self.order))
         print("length : "+str(self.length))
         print("fitness : "+str(self.fitness))
-ex=[]
-list=["A",2,3,5]
-ex.append(Route(list,123,143))
-ex.append(Route(list,123,143))
-#classList.append(data.route(genList,distance,fitness)
-#print(ex[0].order==ex[1].order)
 
-#ex[0].testPrint()
-#ex[1].testPrint()
-#a=[1,2,3,4,5,6,7]
-list=[]
-list.append(data.Route([1,2],1,5))
-list.append(data.Route([1,2,3],4,6))
-list.append(data.Route([1,2],2,7))
-list.append(data.Route([1,2,4],5,11))
 
-#list.length.sort()
+ex = []
+list = ["A", 2, 3, 5]
+ex.append(Route(list, 123, 143))
+ex.append(Route(list, 123, 143))
+# classList.append(data.route(genList,distance,fitness)
+# print(ex[0].order==ex[1].order)
+
+# ex[0].testPrint()
+# ex[1].testPrint()
+# a=[1,2,3,4,5,6,7]
+list = []
+list.append(data.Route([1, 2], 1, 5))
+list.append(data.Route([1, 2, 3], 4, 6))
+list.append(data.Route([1, 2], 2, 7))
+list.append(data.Route([1, 2, 4], 5, 11))
+
+# list.length.sort()
 
 list.sort(key=operator.attrgetter('length'))
 list[1].testPrint()
 
-a=[1,2,3,4,5]
+a = [1, 2, 3, 4, 5]
 print(a[:3])
 del a[:3]
 print(a)
