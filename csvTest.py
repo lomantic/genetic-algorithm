@@ -1,5 +1,6 @@
 import numpy as np
 import csv
+import func
 
 cities = []
 
@@ -23,6 +24,7 @@ with open('TSP.csv', mode='r', newline='') as tsp:
         i = i+1
 
 print(cities[0])
+'''
 print(cities[0][0])
 print(cities[1])
 
@@ -30,3 +32,4 @@ city1 = [float(cities[0][0]), float(cities[0][1])]
 city2 = [float(cities[1][0]), float(cities[1][1])]
 
 print('distance 0~1 : '+str(distance(city1, city2)))
+'''

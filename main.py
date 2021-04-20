@@ -5,6 +5,16 @@ import cgi
 import os
 import data
 import func
+import csv
+
+
+# read TSP.csv and store it to list
+cities = []
+with open('TSP.csv', mode='r', newline='') as tsp:
+    reader = csv.reader(tsp)
+    for row in reader:
+        cities.append(row)
+    func.TSP.sendToFunc(cities)
 
 
 distance = 0  # total distance of one gene
@@ -18,14 +28,23 @@ gen = []  # memory for single gen
 
 num = 0
 
+'''
 # generate gene and calculate fitness, distance
 for j in range(genCount):
     gen = func.generateGene()
     distance = func.calDistance(gen)
     fitness = func.calFitness(distance)
-    genes.append(data.Route(gen, distance, fitness))
+    genes.append(func.Route(gen, distance, fitness))
+'''
+# TSP.csv type version
+for j in range(genCount):
+    gen = func.TSP.generateGene()
+    distance = func.TSP.calDistance(gen)
+    fitness = func.calFitness(distance)
+    genes.append(func.Route(gen, distance, fitness))
 
-bestGene = data.Route([0], 0, 0)
+
+bestGene = func.Route([0], 0, 0)
 identicalCount = 0  # same result count
 breakCount = 9  # forbid infinity loop
 newRecord = 0
