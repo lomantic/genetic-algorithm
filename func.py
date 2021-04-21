@@ -1,4 +1,4 @@
-import data
+
 import random
 import operator
 import numpy as np
@@ -111,7 +111,7 @@ def getDistance(former, latter):  # TSP complete
 
 
 def calFitness(distance):
-    fitness = (1000000/distance)**2
+    fitness = (10000000/distance)**2
     return fitness
 
 
@@ -125,13 +125,18 @@ def topFitness(genes, superiorCount):
 
 
 def wheelRoulette(genes):
-    max = sum(gene.fitness for gene in genes)
+    totalFitness = float(sum(gene.fitness for gene in genes))
+    portions = [gene.fitness/totalFitness for gene in genes]
+    selectedGene = random.choices(genes, weights=portions, k=1)
+    return selectedGene[0]  # random.choices returns list
+    ''' # unproper wheelRoulette
     pick = random.uniform(0, max)
     current = 0
     for gene in genes:
         current += gene.fitness
         if current > pick:
             return gene
+    '''
 
 
 def sortGene(genes, geneCount):
@@ -206,7 +211,7 @@ def sourceGeneInspector(sourceGene, pickedGene):
 
 def mutation(gene):
     mutationLevel = random.randint(len(gene)//2, len(gene))
-    for i in range(mutationLevel):
+    for i in range(mutationLevel):  # pick two idx and swap
         exchange = random.sample(range(0, len(gene)), 2)
         gene[exchange[0]], gene[exchange[1]
                                 ] = gene[exchange[1]], gene[exchange[0]]

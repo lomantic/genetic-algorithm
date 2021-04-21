@@ -3,7 +3,6 @@
 # print()
 import cgi
 import os
-import data
 import func
 import csv
 
@@ -24,7 +23,7 @@ with open('TSP.csv', mode='r', newline='') as tsp:
 
 distance = 0  # total distance of one gene
 fitness = 0  # fitness of one gene
-genCount = 3000  # numbers of genes generated
+genCount = 2000  # numbers of genes generated
 survivors = 1000  # numbers of genes survive in one generation
 generation = 1000000  # generation span approximate inf
 genes = []  # array of genes generated
