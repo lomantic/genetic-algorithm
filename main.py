@@ -12,16 +12,21 @@ import csv
 cities = []
 with open('TSP.csv', mode='r', newline='') as tsp:
     reader = csv.reader(tsp)
+    i = 0
     for row in reader:
         cities.append(row)
-    func.TSP.sendToFunc(cities)
+        if i > 50:
+            break
+        i = i+1
+
+    func.sendToFunc(cities)
 
 
 distance = 0  # total distance of one gene
 fitness = 0  # fitness of one gene
 genCount = 3000  # numbers of genes generated
-survivors = 300  # numbers of genes survive in one generation
-generation = 50  # number of generation calculated
+survivors = 1000  # numbers of genes survive in one generation
+generation = 100  # number of generation calculated
 genes = []  # array of genes generated
 survivorGenes = []  # array of genes survived in one generation
 gen = []  # memory for single gen
@@ -34,18 +39,19 @@ for j in range(genCount):
     gen = func.generateGene()
     distance = func.calDistance(gen)
     fitness = func.calFitness(distance)
-    genes.append(func.Route(gen, distance, fitness))
+    genes.append(func.TSP(gen, distance, fitness))
 '''
 # TSP.csv type version
 for j in range(genCount):
-    gen = func.TSP.generateGene()
-    distance = func.TSP.calDistance(gen)
+    gen = func.generateGene(len(cities))
+    distance = func.calDistance(gen)
     fitness = func.calFitness(distance)
-    genes.append(func.Route(gen, distance, fitness))
+    genes.append(func.geneInfo(gen, distance, fitness))
 
 
-bestGene = func.Route([0], 0, 0)
+bestGene = func.geneInfo([0], 0, 0)
 identicalCount = 0  # same result count
+recordGuardCount = 0  # best record guard count
 breakCount = 9  # forbid infinity loop
 newRecord = 0
 bestRecord = 0  # prevent excessive mutaion
@@ -61,15 +67,19 @@ for j in range(generation):
         print("================ "+str(j+1) +
               "th Gen ===========================")
         newGene.testPrint()
-        print("PREVIOUS BEST RECORD : "+str(bestGene.fitness))
+        print("PREVIOUS BEST RECORD : "+str(bestGene.length))
         identicalCount = 0
-
+    else:
+        identicalCount = identicalCount+1
+        print("identical count : "+str(identicalCount))
     if newGene.fitness > bestGene.fitness:
         bestGene = newGene
+        recordGuardCount = 0
     else:
+        recordGuardCount = recordGuardCount+1
+        print("Record Guard Count : "+str(recordGuardCount))
 
-        identicalCount = identicalCount+1
-    if identicalCount > breakCount:
+    if identicalCount > breakCount or recordGuardCount > breakCount*2:
         break
 
 

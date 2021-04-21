@@ -7,8 +7,21 @@ import csv
 
 # New function with identical name for TSP.csv
 
-
+'''
 class Route:
+    def __init__(self, order, length, fitness):
+        self.order = order
+        self.length = length
+        self.fitness = fitness
+
+    def testPrint(self):
+        print("order : "+str(self.order))
+        print("length : "+str(self.length))
+        print("fitness : "+str(self.fitness))
+'''
+
+
+class geneInfo:
     def __init__(self, order, length, fitness):
         self.order = order
         self.length = length
@@ -20,38 +33,41 @@ class Route:
         print("fitness : "+str(self.fitness))
 
 
-cities = []
+def generateGene(geneElementCount):
+    # 1~999 cuz TSP starts from city '0'
+    citys = [i for i in range(1, geneElementCount)]
+    random.shuffle(citys)
+    return citys
 
 
-class TSP:
-
-    def sendToFunc(cityList):
-        cities = cityList
-
-    def generateGene():
-        # 1~999 cuz TSP starts from city '0'
-        citys = [i for i in range(1, 1000)]
-        random.shuffle(citys)
-        return citys
-
-    def calDistance(list):  # input : list containing 1~999
-        print(list[0])
-        distance = getDistance(0, list[0])  # travel city'0'~ city'list[0]'
-        for i in range(len(list)-2):  # idx=0~998  len(list)==999
-            distance = distance + getDistance(list[i], list[i+1])
-        distance = distance + getDistance(list[len(list)-1], 0)
-        return distance
-
-    def getDistance(former, latter):
-        print("getDis activate")
-
-        city1 = [float(cities[former][0]), float(cities[former][1])]
-        city2 = [float(cities[latter][0]), float(cities[latter][1])]
-        dist = np.linalg.norm(np.array(city1)-np.array(city2))
-        print(dist)  # test
-        return dist
+def calDistance(list):  # input : list containing 1~999
+    # print("list[0] : "+str(list[0]))  ##### test code######
+    # travel city'0'~ city'list[0]'
+    distance = getDistance(0, list[0])
+    ##print("distance: "+str(distance))
+    for i in range(len(list)-2):  # idx=0~998  len(list)==999
+        distance = distance + getDistance(list[i], list[i+1])
+    distance = distance + getDistance(list[len(list)-1], 0)
+    return distance
 
 
+def getDistance(former, latter):
+    #print("getDis activate") ######test code########
+    #print("former : "+str(former))
+    #print("latter : "+str(latter))
+    city1 = [float(cities[former][0]), float(cities[former][1])]
+    city2 = [float(cities[latter][0]), float(cities[latter][1])]
+    dist = np.linalg.norm(np.array(city1)-np.array(city2))
+    # print(dist)  ####### test code######3
+    return dist
+
+
+def sendToFunc(cityList):
+    global cities
+    cities = cityList
+
+
+'''
 def generateGene():  # TSP complete
     citys = ["B", "C", "D", "E", "F", "G", "H", "I", "J", "K"]
     random.shuffle(citys)
@@ -89,6 +105,8 @@ def getDistance(former, latter):  # TSP complete
         return data.distance_J[latter]
     elif former == "K":
         return data.distance_K[latter]
+
+'''
 
 
 def calFitness(distance):
@@ -161,7 +179,8 @@ def mixGene(baseGene, sourceGene, geneNum):
     #pickedGene= random.sample(baseGene.order,geneNum)
     # pickedGene.sort()  #unproper for TSP
     mutationRate = 20  # 1/mutationRate
-    newGene = data.Route([0], 0, 0)
+    #newGene = data.Route([0], 0, 0)
+    newGene = geneInfo([0], 0, 0)
     base = baseGene.order[:geneNum]
     source = sourceGene.order[:]
     source = sourceGeneInspector(source, base)
