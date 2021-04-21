@@ -33,8 +33,9 @@ class geneInfo:
         print("fitness : "+str(self.fitness))
 
 
-def generateGene(geneElementCount):
-    # 1~999 cuz TSP starts from city '0'
+def generateGene(geneElementCount):  # gene is constructed with idx
+    # input idx 0~N-1 total input :N
+    # range (1,N) cuz TSP must starts from city '0'
     citys = [i for i in range(1, geneElementCount)]
     random.shuffle(citys)
     return citys
@@ -206,7 +207,7 @@ def sourceGeneInspector(sourceGene, pickedGene):
 def mutation(gene):
     mutationLevel = random.randint(len(gene)//2, len(gene))
     for i in range(mutationLevel):
-        exchange = random.sample(range(0, 5), 2)
+        exchange = random.sample(range(0, len(gene)), 2)
         gene[exchange[0]], gene[exchange[1]
                                 ] = gene[exchange[1]], gene[exchange[0]]
     return gene

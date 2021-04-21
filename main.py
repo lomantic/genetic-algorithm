@@ -1,5 +1,5 @@
 #!C:\Program Files\Python39\python.exe
-#print("content-type: text/html; charset=utf-8\n")
+# print("content-type: text/html; charset=utf-8\n")
 # print()
 import cgi
 import os
@@ -15,9 +15,9 @@ with open('TSP.csv', mode='r', newline='') as tsp:
     i = 0
     for row in reader:
         cities.append(row)
-        if i > 50:
+    '''  if i > 50:
             break
-        i = i+1
+        i = i+1'''
 
     func.sendToFunc(cities)
 
@@ -26,7 +26,7 @@ distance = 0  # total distance of one gene
 fitness = 0  # fitness of one gene
 genCount = 3000  # numbers of genes generated
 survivors = 1000  # numbers of genes survive in one generation
-generation = 100  # number of generation calculated
+generation = 1000000  # generation span approximate inf
 genes = []  # array of genes generated
 survivorGenes = []  # array of genes survived in one generation
 gen = []  # memory for single gen
