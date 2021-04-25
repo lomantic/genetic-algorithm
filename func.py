@@ -110,9 +110,21 @@ def getDistance(former, latter):  # TSP complete
 '''
 
 
-def calFitness(distance):
-    fitness = (10000000/distance)**2
-    return fitness
+def calFitness(geneList):
+    distanceList = []
+    worstDistance = 0
+    bestDistance = 0
+    k = 3  # choose k : 3 or 4  higher the k stronger the select pressure for fitness
+
+    for j in range(len(geneList)):
+        distanceList.append(geneList[j].length)
+
+    worstDistance = max(distanceList)
+    bestDistance = min(distanceList)
+
+    for j in range(len(geneList)):
+        geneList[j].fitness = float(
+            (worstDistance-geneList[j].length) + ((worstDistance-bestDistance)/(k-1)))
 
 
 def topFitness(genes, superiorCount):
@@ -128,7 +140,7 @@ def wheelRoulette(genes):
     totalFitness = float(sum(gene.fitness for gene in genes))
     portions = [gene.fitness/totalFitness for gene in genes]
     selectedGene = random.choices(genes, weights=portions, k=1)
-    return selectedGene[0]  # random.choices returns list
+    return selectedGene[0]  # selectedGene[0] cuz random.choices returns list
     ''' # unproper wheelRoulette
     pick = random.uniform(0, max)
     current = 0
@@ -196,7 +208,7 @@ def mixGene(baseGene, sourceGene, geneNum):
         newGene.order = mutation(newGene.order)
 
     newGene.length = calDistance(newGene.order)
-    newGene.fitness = calFitness(newGene.length)
+    # newGene.fitness = calFitness(newGene.length) inproper fitness control
 
     return newGene
 
@@ -225,6 +237,8 @@ def newGeneration(geneList, geneCount):
         parent = sortGene(geneList, 2)
         child = crossover(parent)
         newGenerationList.append(child)
+    # calculate fitness
+    calFitness(newGenerationList)
     newGenerationList = newGenerationList+geneList
     return newGenerationList
 

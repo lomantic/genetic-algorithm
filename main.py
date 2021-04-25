@@ -5,6 +5,7 @@ import cgi
 import os
 import func
 import csv
+import sys
 
 
 # read TSP.csv and store it to list
@@ -20,17 +21,15 @@ with open('TSP.csv', mode='r', newline='') as tsp:
 
     func.sendToFunc(cities)
 
-
-distance = 0  # total distance of one gene
-fitness = 0  # fitness of one gene
-genCount = 2000  # numbers of genes generated
-survivors = 1000  # numbers of genes survive in one generation
+gen = []  # city travel order for single gen
+distance = 0.0  # total distance of single gene
+fitness = 0.0  # fitness of single gene
+genCount = 500  # number of genes per generation
+survivors = 200  # number of genes survived in single generation
 generation = 1000000  # generation span approximate inf
-genes = []  # array of genes generated
+genes = []  # list of genes generated
 survivorGenes = []  # array of genes survived in one generation
-gen = []  # memory for single gen
 
-num = 0
 
 '''
 # generate gene and calculate fitness, distance
@@ -44,9 +43,12 @@ for j in range(genCount):
 for j in range(genCount):
     gen = func.generateGene(len(cities))
     distance = func.calDistance(gen)
-    fitness = func.calFitness(distance)
+    # fitness = func.calFitness(distance) # inproper fitness calculation
     genes.append(func.geneInfo(gen, distance, fitness))
+    # fitness: yet calculated
 
+# calculate fitness
+func.calFitness(genes)
 
 bestGene = func.geneInfo([0], 0, 0)
 identicalCount = 0  # same result count
