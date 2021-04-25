@@ -45,7 +45,7 @@ def calDistance(list):  # input : list containing 1~999
     # print("list[0] : "+str(list[0]))  ##### test code######
     # travel city'0'~ city'list[0]'
     distance = getDistance(0, list[0])
-    ##print("distance: "+str(distance))
+    # print("distance: "+str(distance))
     for i in range(len(list)-2):  # idx=0~998  len(list)==999
         distance = distance + getDistance(list[i], list[i+1])
     distance = distance + getDistance(list[len(list)-1], 0)
@@ -54,8 +54,8 @@ def calDistance(list):  # input : list containing 1~999
 
 def getDistance(former, latter):
     #print("getDis activate") ######test code########
-    #print("former : "+str(former))
-    #print("latter : "+str(latter))
+    # print("former : "+str(former))
+    # print("latter : "+str(latter))
     city1 = [float(cities[former][0]), float(cities[former][1])]
     city2 = [float(cities[latter][0]), float(cities[latter][1])]
     dist = np.linalg.norm(np.array(city1)-np.array(city2))
@@ -64,7 +64,7 @@ def getDistance(former, latter):
 
 
 def sendToFunc(cityList):
-    global cities
+    global cities  # make cites global in file : func
     cities = cityList
 
 
@@ -152,7 +152,7 @@ def wheelRoulette(genes):
 
 
 def sortGene(genes, geneCount):
-    #superiorCount = 10
+    # superiorCount = 10
     i = 0
     # candidates=topFitness(genes,superiorCount)
     candidates = []
@@ -174,7 +174,7 @@ def sortGene(genes, geneCount):
 def overlapKiller(candidates, newcomer):
     for gene in candidates:
         if gene == newcomer:
-            #print("overlap detected")
+            # print("overlap detected")
             return False
     return True
 
@@ -194,10 +194,10 @@ def crossover(parent):
 
 
 def mixGene(baseGene, sourceGene, geneNum):
-    #pickedGene= random.sample(baseGene.order,geneNum)
+    # pickedGene= random.sample(baseGene.order,geneNum)
     # pickedGene.sort()  #unproper for TSP
     mutationRate = 20  # 1/mutationRate
-    #newGene = data.Route([0], 0, 0)
+    # newGene = data.Route([0], 0, 0)
     newGene = geneInfo([0], 0, 0)
     base = baseGene.order[:geneNum]
     source = sourceGene.order[:]
@@ -215,7 +215,7 @@ def mixGene(baseGene, sourceGene, geneNum):
 
 def sourceGeneInspector(sourceGene, pickedGene):
     # print("source: "+str(sourceGene)) # test code error fix
-    #print("picked: "+str(pickedGene))
+    # print("picked: "+str(pickedGene))
     for i in range(len(pickedGene)):
         sourceGene.remove(pickedGene[i])
     return sourceGene
@@ -228,6 +228,44 @@ def mutation(gene):
         gene[exchange[0]], gene[exchange[1]
                                 ] = gene[exchange[1]], gene[exchange[0]]
     return gene
+
+
+def chooseTwoGeneElement(gene, geneIndex):
+    geneIndex = []
+    interval = 0
+    while True:
+        geneIndex = random.sample(range(0, len(gene)), 2)
+        geneIndex.sort()
+        # do not allow index right next to each other
+        interval = abs(geneIndex[0]-geneIndex[1])-1
+        if interval > 0:
+            break
+    return geneIndex
+
+
+def slideMutation(gene):
+    geneIndex = []
+    geneIndex = chooseTwoGeneElement(gene, geneIndex)
+    interval = abs(geneIndex[0]-geneIndex[1])-1
+    tmp = gene[geneIndex[0]+1]  # idx 2nd will slide
+    for i in range(interval):
+        # print(str(gene[(geneIndex[0]+1)+(i+1)]) +
+        #      " to position : "+str(gene[(geneIndex[0]+1)+i])) #####TEST CODE#####
+        gene[(geneIndex[0]+1)+i] = gene[(geneIndex[0]+1)+(i+1)]
+
+    gene[geneIndex[1]] = tmp
+
+
+def inversionMutation(gene):
+    geneIndex = []
+    geneIndex = chooseTwoGeneElement(gene, geneIndex)
+    interval = abs(geneIndex[0]-geneIndex[1])-1
+    swapCount = int(interval//2)+1
+    for i in range(swapCount):  # mirror genes
+        gene[(geneIndex[0]+1)+i], gene[geneIndex[1]-i
+                                       ] = gene[geneIndex[1]-i], gene[(geneIndex[0]+1)+i]
+       # print("swap : "+str(gene[(geneIndex[0]+1)+i]) +
+       #       " and "+str(gene[geneIndex[1]-i]))#####TEST CODE#######3
 
 
 def newGeneration(geneList, geneCount):
