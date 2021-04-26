@@ -29,7 +29,7 @@ class geneInfo:
 
     def testPrint(self):
         print("order : "+str(self.order))
-        print("length : "+str(self.length))
+        print("\nlength : "+str(self.length))
         print("fitness : "+str(self.fitness))
 
 
@@ -44,12 +44,17 @@ def generateGene(geneElementCount):  # gene is constructed with idx
 def calDistance(list):  # input : list containing 1~999
     # print("list[0] : "+str(list[0]))  ##### test code######
     # travel city'0'~ city'list[0]'
-    distance = getDistance(0, list[0])
+    distance = getDistanceList(0, list[0])
     # print("distance: "+str(distance))
     for i in range(len(list)-2):  # idx=0~998  len(list)==999
-        distance = distance + getDistance(list[i], list[i+1])
-    distance = distance + getDistance(list[len(list)-1], 0)
+        distance = distance + getDistanceList(list[i], list[i+1])
+    distance = distance + getDistanceList(list[len(list)-1], 0)
     return distance
+
+
+def getDistanceList(former, latter):
+    dist = float(totalDistance[former][latter])
+    return dist
 
 
 def getDistance(former, latter):
@@ -63,9 +68,11 @@ def getDistance(former, latter):
     return dist
 
 
-def sendToFunc(cityList):
+def sendToFunc(cityList, totalDistanceList):
     global cities  # make cites global in file : func
+    global totalDistance  # make totalDistance global
     cities = cityList
+    totalDistance = totalDistanceList
 
 
 '''
@@ -254,6 +261,7 @@ def slideMutation(gene):
         gene[(geneIndex[0]+1)+i] = gene[(geneIndex[0]+1)+(i+1)]
 
     gene[geneIndex[1]] = tmp
+    return gene
 
 
 def inversionMutation(gene):
@@ -266,6 +274,13 @@ def inversionMutation(gene):
                                        ] = gene[geneIndex[1]-i], gene[(geneIndex[0]+1)+i]
        # print("swap : "+str(gene[(geneIndex[0]+1)+i]) +
        #       " and "+str(gene[geneIndex[1]-i]))#####TEST CODE#######3
+    return gene
+
+
+def irgibnnmMutation(gene):
+    gene = inversionMutation(gene)
+
+    #nearByCity= gene.sorted(reverse=True)[:3]
 
 
 def newGeneration(geneList, geneCount):

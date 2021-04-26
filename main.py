@@ -10,22 +10,31 @@ import sys
 
 # read TSP.csv and store it to list
 cities = []
+distancePerCity = []
+print("Reading TSP.csv ...")
 with open('TSP.csv', mode='r', newline='') as tsp:
     reader = csv.reader(tsp)
-    i = 0
+    # i = 0
     for row in reader:
         cities.append(row)
     '''  if i > 50:
             break
         i = i+1'''
+print("TSP.csv Read complete")
+print("Reading totalDistance.csv ...")
+with open('totalDistance.csv', mode='r', newline='') as allDistance:
+    reader = csv.reader(allDistance)
+    for row in reader:
+        distancePerCity.append(row)
+print("totalDistance.csv Read complete")
 
-    func.sendToFunc(cities)
+func.sendToFunc(cities, distancePerCity)
 
 gen = []  # city travel order for single gen
 distance = 0.0  # total distance of single gene
 fitness = 0.0  # fitness of single gene
-genCount = 500  # number of genes per generation
-survivors = 200  # number of genes survived in single generation
+genCount = 1000  # number of genes per generation
+survivors = 500  # number of genes survived in single generation
 generation = 1000000  # generation span approximate inf
 genes = []  # list of genes generated
 survivorGenes = []  # array of genes survived in one generation
@@ -40,6 +49,7 @@ for j in range(genCount):
     genes.append(func.TSP(gen, distance, fitness))
 '''
 # TSP.csv type version
+print("creating 1st Gen ...")
 for j in range(genCount):
     gen = func.generateGene(len(cities))
     distance = func.calDistance(gen)
@@ -50,7 +60,7 @@ for j in range(genCount):
 # calculate fitness
 func.calFitness(genes)
 
-bestGene = func.geneInfo([0], 0, 0)
+bestGene = func.geneInfo([0], 999999, 0)
 identicalCount = 0  # same result count
 recordGuardCount = 0  # best record guard count
 breakCount = 9  # forbid infinity loop
@@ -68,12 +78,14 @@ for j in range(generation):
         print("================ "+str(j+1) +
               "th Gen ===========================")
         newGene.testPrint()
-        print("PREVIOUS BEST RECORD : "+str(bestGene.length))
+        if j > 0:  # do not print at 1st gen
+            print("PREVIOUS BEST RECORD : "+str(bestGene.length))
         identicalCount = 0
     else:
         identicalCount = identicalCount+1
         print("identical count : "+str(identicalCount))
-    if newGene.fitness > bestGene.fitness:
+
+    if newGene.length < bestGene.length:
         bestGene = newGene
         recordGuardCount = 0
     else:
@@ -82,6 +94,7 @@ for j in range(generation):
 
     if identicalCount > breakCount or recordGuardCount > breakCount*2:
         break
+    print("\ncreating next gen...\n")
 
 
 print("===================Final Gen=====================")
