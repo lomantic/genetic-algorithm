@@ -37,6 +37,9 @@ with open('cityDistance.csv', mode='r', newline='') as cityDistance:
         nearbyCity.append(row)
 print("cityDistance.csv Read complete")
 
+tuple(cities)
+tuple(distancePerCity)
+tuple(nearbyCity)
 func.sendCityList(cities)
 func.sendTotalDistanceList(distancePerCity)
 func.sendNearbyCityList(nearbyCity)
@@ -45,8 +48,8 @@ func.sendNearbyCityList(nearbyCity)
 gen = []  # city travel order for single gen
 distance = 0.0  # total distance of single gene
 fitness = 0.0  # fitness of single gene
-genCount = 1000  # number of genes per generation
-survivors = 500  # number of genes survived in single generation
+genCount = 400  # number of genes per generation
+survivors = 200  # number of genes survived in single generation
 generation = 1000000  # generation span approximate inf
 genes = []  # list of genes generated
 survivorGenes = []  # array of genes survived in one generation

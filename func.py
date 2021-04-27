@@ -79,6 +79,7 @@ def sendTotalDistanceList(totalDistanceList):
 
 def sendCityList(cityList):
     global cities  # make cites global in file : func
+
     cities = cityList
 
 
