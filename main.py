@@ -11,6 +11,7 @@ import sys
 # read TSP.csv and store it to list
 cities = []
 distancePerCity = []
+nearbyCity = []
 print("Reading TSP.csv ...")
 with open('TSP.csv', mode='r', newline='') as tsp:
     reader = csv.reader(tsp)
@@ -21,6 +22,7 @@ with open('TSP.csv', mode='r', newline='') as tsp:
             break
         i = i+1'''
 print("TSP.csv Read complete")
+
 print("Reading totalDistance.csv ...")
 with open('totalDistance.csv', mode='r', newline='') as allDistance:
     reader = csv.reader(allDistance)
@@ -28,7 +30,17 @@ with open('totalDistance.csv', mode='r', newline='') as allDistance:
         distancePerCity.append(row)
 print("totalDistance.csv Read complete")
 
-func.sendToFunc(cities, distancePerCity)
+print("Reading cityDistance.csv ...")
+with open('cityDistance.csv', mode='r', newline='') as cityDistance:
+    reader = csv.reader(cityDistance)
+    for row in reader:
+        nearbyCity.append(row)
+print("cityDistance.csv Read complete")
+
+func.sendCityList(cities)
+func.sendTotalDistanceList(distancePerCity)
+func.sendNearbyCityList(nearbyCity)
+
 
 gen = []  # city travel order for single gen
 distance = 0.0  # total distance of single gene

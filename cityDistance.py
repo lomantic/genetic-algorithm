@@ -15,7 +15,7 @@ with open('TSP.csv', mode='r', newline='') as tsp:
     for row in reader:
         cities.append(row)
 
-func.sendToFunc(cities)
+func.sendCityList(cities)
 
 
 for city1 in range(len(cities)):
@@ -32,7 +32,7 @@ for city1 in range(len(cities)):
     totalDistanceList.append(tmpCity)
 
     nearbyCityList.append(
-        sorted(zip(idx, distanceList), key=itemgetter(1))[1:6])
+        sorted(zip(idx, distanceList), key=itemgetter(1))[1:11])  # top 10 nearest
     distanceList.clear()
 
 with open('totalDistance.csv', 'w', newline='') as distanceList:
@@ -41,11 +41,14 @@ with open('totalDistance.csv', 'w', newline='') as distanceList:
     for cityDistanceList in totalDistanceList:
         writer.writerow(cityDistanceList)
 
-
+'''
 i = 0
 for nearList in nearbyCityList:
     for city in nearList:
         idxList.append(city[0])
+    if 0 in idxList:  # remove city 0 in list cuz city 0 is always start
+        idxList.remove(0)
+
     print("city "+str(i)+" : closest cities idx >>", end=' ')
     i = i+1
     print(idxList)
@@ -53,9 +56,12 @@ for nearList in nearbyCityList:
     nearbyCityIndexList.append(tmpIdx)
     idxList.clear()
 
+# city 0 nearest city is not needed cuz city0 is always the start
+nearbyCityIndexList = nearbyCityIndexList
 
 with open('cityDistance.csv', 'w', newline='') as cityList:
     writer = csv.writer(cityList)
 
     for cityIdxList in nearbyCityIndexList:
         writer.writerow(cityIdxList)
+'''

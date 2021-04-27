@@ -1,6 +1,7 @@
 
 import random
 import operator
+from operator import itemgetter
 import numpy as np
 import csv
 # not organized with class
@@ -35,7 +36,7 @@ class geneInfo:
 
 def generateGene(geneElementCount):  # gene is constructed with idx
     # input idx 0~N-1 total input :N
-    # range (1,N) cuz TSP must starts from city '0'
+    # range (1,N) >>1 ~ N-1 cuz TSP must starts from city '0'
     citys = [i for i in range(1, geneElementCount)]
     random.shuffle(citys)
     return citys
@@ -53,6 +54,9 @@ def calDistance(list):  # input : list containing 1~999
 
 
 def getDistanceList(former, latter):
+
+    # print("former : "+str(former)) ######test code########33
+    #print("latter "+str(latter))
     dist = float(totalDistance[former][latter])
     return dist
 
@@ -68,11 +72,19 @@ def getDistance(former, latter):
     return dist
 
 
-def sendToFunc(cityList, totalDistanceList):
-    global cities  # make cites global in file : func
+def sendTotalDistanceList(totalDistanceList):
     global totalDistance  # make totalDistance global
-    cities = cityList
     totalDistance = totalDistanceList
+
+
+def sendCityList(cityList):
+    global cities  # make cites global in file : func
+    cities = cityList
+
+
+def sendNearbyCityList(nearbyCityList):
+    global nearbyCities  # make nearbyCity global in file : func
+    nearbyCities = nearbyCityList
 
 
 '''
@@ -229,16 +241,52 @@ def sourceGeneInspector(sourceGene, pickedGene):
 
 
 def mutation(gene):
+
+    mutationResult = []
+    mutationGene = []
+    mutationDistance = []
+
+    slideGene = gene.copy()
+    slideGene = slideMutation(slideGene)
+    mutationGene.append(slideGene)
+    slideGeneDistance = calDistance(slideGene)
+    mutationDistance.append(slideGeneDistance)
+
+    inversionGene = gene.copy()
+    inversionGene = inversionMutation(inversionGene)
+    mutationGene.append(inversionGene)
+    inversionGeneDistance = calDistance(inversionGene)
+    mutationDistance.append(inversionGeneDistance)
+
+    irgibnnmGene = gene.copy()
+    irgibnnmGene = irgibnnmMutation(irgibnnmGene)
+    mutationGene.append(irgibnnmGene)
+    irgibnnmGeneDistance = calDistance(irgibnnmGene)
+    mutationDistance.append(irgibnnmGeneDistance)
+
+    mutationResult.append(
+        sorted(zip(mutationGene, mutationDistance), key=itemgetter(1)))
+    ''' ##TEST CODE###
+    print("total mutatuion")
+    print(mutationResult)
+
+    print("mutation Result: ")
+    '''
+    gene = mutationResult[0][0][0]  # return best mutation gene
+    # print(mutationResult[0][0][0])
+    # exit()
+
+    '''#unproper mutation
     mutationLevel = random.randint(len(gene)//2, len(gene))
     for i in range(mutationLevel):  # pick two idx and swap
         exchange = random.sample(range(0, len(gene)), 2)
         gene[exchange[0]], gene[exchange[1]
                                 ] = gene[exchange[1]], gene[exchange[0]]
+                                '''
     return gene
 
 
 def chooseTwoGeneElement(gene, geneIndex):
-    geneIndex = []
     interval = 0
     while True:
         geneIndex = random.sample(range(0, len(gene)), 2)
@@ -279,8 +327,21 @@ def inversionMutation(gene):
 
 def irgibnnmMutation(gene):
     gene = inversionMutation(gene)
+    # choose single gene excpt city 0
+    randomGene = random.randint(1, len(gene))  # city1~[len(gene)]
 
-    #nearByCity= gene.sorted(reverse=True)[:3]
+    # nearbyCities is [idx list] of nearest cities
+    # nearest city from randomGene
+    randomGeneClosest = int(nearbyCities[randomGene][0])
+    # choose city which is around randomGeneClosest ()
+    while True:
+        nearbycity = int(random.choice(nearbyCities[randomGeneClosest][:5]))
+        if nearbycity != randomGene and nearbycity != randomGeneClosest:
+            break
+    gene[randomGene-1], gene[nearbycity -
+                             1] = gene[nearbycity-1], gene[randomGene-1]
+    # idx randomGene-1,nearbycity-1  cuz randomGene,nearbycity are citynumber not idx number
+    return gene
 
 
 def newGeneration(geneList, geneCount):
