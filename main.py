@@ -12,6 +12,9 @@ import sys
 cities = []
 distancePerCity = []
 nearbyCity = []
+generation = 1600  # generation span
+genCount = 400  # number of population
+
 print("Reading TSP.csv ...")
 with open('TSP.csv', mode='r', newline='') as tsp:
     reader = csv.reader(tsp)
@@ -37,21 +40,16 @@ with open('cityDistance.csv', mode='r', newline='') as cityDistance:
         nearbyCity.append(row)
 print("cityDistance.csv Read complete")
 
-cities = tuple(cities)
-distancePerCity = tuple(distancePerCity)
-nearbyCity = tuple(nearbyCity)
 func.sendCityList(cities)
 func.sendTotalDistanceList(distancePerCity)
 func.sendNearbyCityList(nearbyCity)
-
+func.gendGenerationSpan(generation)
 
 gen = []  # city travel order for single gen
 distance = 0.0  # total distance of single gene
 fitness = 0.0  # fitness of single gene
-genCount = 400  # number of population
 # survivors = 200  # number of genes survived in single generation
 # DHM/ILC crossover does not need survivor gene
-generation = 1000000  # generation span approximate inf
 genes = []  # list of genes generated
 survivorGenes = []  # array of genes survived in one generation
 
@@ -65,7 +63,7 @@ for j in range(genCount):
     genes.append(func.TSP(gen, distance, fitness))
 '''
 # TSP.csv type version
-print("creating 1st Gen ...")
+print("creating 0st Gen ...")
 for j in range(genCount):
     gen = func.generateGene(len(cities))
     distance = func.calDistance(gen)
@@ -83,7 +81,7 @@ breakCount = 9  # forbid infinity loop
 newRecord = 0
 bestRecord = 0  # prevent excessive mutaion
 for j in range(generation):
-
+    func.currentGenerationLevel = func.currentGenerationLevel+1
     # sort genes with wheelRoulette : count survivors
     # !!## survivorGenes = func.sortGene(genes, survivors)
     # DHM/ILC crossover does not need survivor gene
@@ -111,8 +109,11 @@ for j in range(generation):
         recordGuardCount = recordGuardCount+1
         print("Record Guard Count : "+str(recordGuardCount))
 
-    if identicalCount > breakCount or recordGuardCount > breakCount*2:
-        break
+    # loop until gen span ends
+    #
+    # if identicalCount > breakCount or recordGuardCount > breakCount*2:
+    #    break
+
     print("\ncreating next gen...\n")
 
 

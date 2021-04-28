@@ -76,17 +76,26 @@ def getDistance(former, latter):
 def sendTotalDistanceList(totalDistanceList):
     global totalDistance  # make totalDistance global
     totalDistance = totalDistanceList
+    totalDistance = tuple(totalDistance)
 
 
 def sendCityList(cityList):
     global cities  # make cites global in file : func
-
     cities = cityList
+    cities = tuple(cities)
 
 
 def sendNearbyCityList(nearbyCityList):
     global nearbyCities  # make nearbyCity global in file : func
     nearbyCities = nearbyCityList
+    nearbyCities = tuple(nearbyCities)
+
+
+def gendGenerationSpan(generationSpan):
+    global generation
+    generation = generationSpan
+    global currentGenerationLevel
+    currentGenerationLevel = 0
 
 
 '''##mini TSP###
@@ -326,10 +335,11 @@ def crossover(newGenerationGeneList, parent):
         print(len(offspringGene[0]))
         exit()
     '''
-    mutationRate = 20  # TEST CODE MUST CHANGE according to  DHM/ILC crossover
+    # mutation Level according to DHM/ILC 100%->0%
+    mutationRate = 1.0-(currentGenerationLevel/generation)
     for gene in offspringGene:
 
-        if 1 == random.randint(1, mutationRate):
+        if random.uniform(0.0, 1.0) <= mutationRate:
             while True:
                 tmpGene = gene.copy()
                 tmpGene = mutation(tmpGene)
