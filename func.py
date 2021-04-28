@@ -4,6 +4,7 @@ import operator
 from operator import itemgetter
 import numpy as np
 import csv
+
 # not organized with class
 
 # New function with identical name for TSP.csv
@@ -56,7 +57,7 @@ def calDistance(list):  # input : list containing 1~999
 def getDistanceList(former, latter):
 
     # print("former : "+str(former)) ######test code########33
-    #print("latter "+str(latter))
+    # print("latter "+str(latter))
     dist = float(totalDistance[former][latter])
     return dist
 
@@ -88,7 +89,7 @@ def sendNearbyCityList(nearbyCityList):
     nearbyCities = nearbyCityList
 
 
-'''
+'''##mini TSP###
 def generateGene():  # TSP complete
     citys = ["B", "C", "D", "E", "F", "G", "H", "I", "J", "K"]
     random.shuffle(citys)
@@ -146,6 +147,8 @@ def calFitness(geneList):
         geneList[j].fitness = float(
             (worstDistance-geneList[j].length) + ((worstDistance-bestDistance)/(k-1)))
 
+    return geneList
+
 
 def topFitness(genes, superiorCount):
     superiorGenes = []
@@ -199,20 +202,158 @@ def overlapKiller(candidates, newcomer):
     return True
 
 
-def crossover(parent):
+def calDistanceCrossover(geneList):
+    distance = 0.0
+    for i in range(len(geneList)-2):
+        distance = distance + getDistanceList(geneList[i], geneList[i+1])
+    return distance
+
+
+def lostGeneFinder(parent, offspring):
+
+    totalGenes = parent.copy()
+    presentGenes = set(offspring.copy())
+    '''
+    #####TEST CODE######
+    print("totalGenes : ", end=' ')
+    print(len(totalGenes))
+    print("presentGenes : ", end=' ')
+    print(len(presentGenes))
+    '''
+    for gene in parent:
+        if gene in presentGenes:
+            totalGenes.remove(gene)
+            presentGenes.remove(gene)
+    '''
+    #####TEST CODE######
+    print("lostGenes : ", end=' ')
+    print(len(totalGenes))
+    '''
+    # Eventually totalGenes contains lost Genes
+    # returns tuple
+    return totalGenes
+
+
+def lostGeneRegenerator(lostGenes, offspring):
+    for gene in lostGenes:
+        headDistance = getDistanceList(gene, offspring[0])
+        tailDistance = getDistanceList(offspring[len(offspring)-1], gene)
+        if headDistance > tailDistance:
+            offspring.append(gene)
+        else:
+            offspring.insert(0, gene)
+
+    return offspring
+
+
+def offspringGeneCreator(parent, child):
+    for i in range(len(child)):
+        lostGenes = lostGeneFinder(parent[i].order, child[i])
+        child[i] = lostGeneRegenerator(lostGenes, child[i])
+
+    return child
+
+
+def crossover(newGenerationGeneList, parent):
+
+    while True:
+        points = random.sample(range(0, len(cities)-3), 2)
+        if abs(points[0]-points[1]) > 1:  # MUST slice each genes into 3 pieces
+            points.sort()
+            break
+    # slice parent node
+    paternalHead = (parent[0].order).copy()[:(points[0]+1)]
+    maternalHead = (parent[1].order).copy()[:(points[0]+1)]
+
+    paternalBody = (parent[0].order).copy()[(points[0]+1):(points[1]+1)]
+    maternalBody = (parent[1].order).copy()[(points[0]+1):(points[1]+1)]
+
+    paternalLeg = (parent[0].order).copy()[(points[1]+1):]
+    maternalLeg = (parent[1].order).copy()[(points[1]+1):]
+
+    paternalBodyDistnace = calDistanceCrossover(paternalBody)
+    maternalBodyDistance = calDistanceCrossover(maternalBody)
+
+    # inherit body which has least distance
+    if paternalBodyDistnace >= maternalBodyDistance:
+        finalBody = maternalBody
+    else:
+        finalBody = paternalBody
+    '''
+    if len(paternalHead)+len(finalBody)+len(paternalLeg) != 999:
+        print("total len mismatch")
+        print(len(paternalHead)+len(paternalBody)+len(paternalLeg))
+        exit()
+    '''
+    child1 = []
+    child2 = []
+
+    child1.extend(paternalHead)
+    child1.extend(finalBody)
+    child1.extend(maternalLeg)
+
+    child2.extend(maternalHead)
+    child2.extend(finalBody)
+    child2.extend(paternalLeg)
+    '''
+    if len(child1) != 999 or len(child2) != 999:
+        print("child1 or 2 len mismatch")
+        print(len(child1))
+        print(len(child2))
+        print(child1)
+        exit()
+    '''
+    # delete duplicated elements
+    child1 = list(dict.fromkeys(child1))
+    child2 = list(dict.fromkeys(child2))
+    '''
+    if len(child1) != 999 or len(child2) != 999:
+        print(len(child1))
+        print(len(child2))
+    '''
+    offspringGene = []
+    offspringGene.append(child1)
+    offspringGene.append(child2)
+    '''
+    if len(offspringGene) != 2:
+        print("childGene [][] len mismatch")
+    '''
+    offspringGene = offspringGeneCreator(parent, offspringGene)
+    '''
+    if len(offspringGene[0]) > 999 or len(offspringGene[1]) > 999:
+        print("child len overflow")
+        print(len(offspringGene[0]))
+        print(len(offspringGene[0]))
+        exit()
+    '''
+    mutationRate = 20  # TEST CODE MUST CHANGE according to  DHM/ILC crossover
+    for gene in offspringGene:
+
+        if 1 == random.randint(1, mutationRate):
+            while True:
+                tmpGene = gene.copy()
+                tmpGene = mutation(tmpGene)
+                if overlapKiller(newGenerationGeneList, tmpGene):
+                    gene = tmpGene
+                    break
+
+    return offspringGene
+
+
+''' # this crossover is too monotonous
     turn = random.randint(0, 1)  # choose whose gene is base
     # number of genes inherit to child from base
     # select base gene where to cut and inherit by random
     geneNum = random.randint(1, len(cities)-2)
 
     if turn == 0:
-        child = mixGene(parent[0], parent[1], geneNum)  # base dad
+        child = mixGene(parent[0], (parent[1].order), geneNum)  # base dad
     else:
         child = mixGene(parent[1], parent[0], geneNum)  # base mom
-
     return child
+    '''
 
-
+''' #This function is no longer used cuz of change in crossover function
 def mixGene(baseGene, sourceGene, geneNum):
     # pickedGene= random.sample(baseGene.order,geneNum)
     # pickedGene.sort()  #unproper for TSP
@@ -231,6 +372,7 @@ def mixGene(baseGene, sourceGene, geneNum):
     # newGene.fitness = calFitness(newGene.length) inproper fitness control
 
     return newGene
+'''
 
 
 def sourceGeneInspector(sourceGene, pickedGene):
@@ -330,7 +472,6 @@ def irgibnnmMutation(gene):
     gene = inversionMutation(gene)
     # choose single gene excpt city 0
     randomGene = random.randint(1, len(gene))  # city1~[len(gene)]
-
     # nearbyCities is [idx list] of nearest cities
     # nearest city from randomGene
     randomGeneClosest = int(nearbyCities[randomGene][0])
@@ -346,15 +487,24 @@ def irgibnnmMutation(gene):
 
 
 def newGeneration(geneList, geneCount):
-    geneCount = geneCount - len(geneList)
+    # DHM/ILC crossover does not consider survivor gene
+    #geneCount = geneCount - len(geneList)
+    newGenerationGeneList = []
     newGenerationList = []
-    for i in range(geneCount):
+
+    for i in range(geneCount//2):
         parent = sortGene(geneList, 2)
-        child = crossover(parent)
-        newGenerationList.append(child)
+        child = crossover(newGenerationGeneList, parent)
+        for gene in child:
+            newGenerationGeneList.append(gene)
+
     # calculate fitness
-    calFitness(newGenerationList)
-    newGenerationList = newGenerationList+geneList
+    for gene in newGenerationGeneList:
+        distance = calDistance(gene)
+        newGenerationList.append(geneInfo(gene, distance, 0.0))
+
+    newGenerationList = calFitness(newGenerationList)
+    # newGenerationList = newGenerationList+geneList ## survivor is no more
     return newGenerationList
 
 

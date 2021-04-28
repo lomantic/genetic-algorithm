@@ -37,9 +37,9 @@ with open('cityDistance.csv', mode='r', newline='') as cityDistance:
         nearbyCity.append(row)
 print("cityDistance.csv Read complete")
 
-tuple(cities)
-tuple(distancePerCity)
-tuple(nearbyCity)
+cities = tuple(cities)
+distancePerCity = tuple(distancePerCity)
+nearbyCity = tuple(nearbyCity)
 func.sendCityList(cities)
 func.sendTotalDistanceList(distancePerCity)
 func.sendNearbyCityList(nearbyCity)
@@ -48,8 +48,9 @@ func.sendNearbyCityList(nearbyCity)
 gen = []  # city travel order for single gen
 distance = 0.0  # total distance of single gene
 fitness = 0.0  # fitness of single gene
-genCount = 400  # number of genes per generation
-survivors = 200  # number of genes survived in single generation
+genCount = 400  # number of population
+# survivors = 200  # number of genes survived in single generation
+# DHM/ILC crossover does not need survivor gene
 generation = 1000000  # generation span approximate inf
 genes = []  # list of genes generated
 survivorGenes = []  # array of genes survived in one generation
@@ -82,12 +83,15 @@ breakCount = 9  # forbid infinity loop
 newRecord = 0
 bestRecord = 0  # prevent excessive mutaion
 for j in range(generation):
+
     # sort genes with wheelRoulette : count survivors
-    survivorGenes = func.sortGene(genes, survivors)
+    # !!## survivorGenes = func.sortGene(genes, survivors)
+    # DHM/ILC crossover does not need survivor gene
     # create new generation
-    genes = func.newGeneration(survivorGenes, genCount)
+    genes = func.newGeneration(genes, genCount)
     newGene = func.getBestGene(genes)
     newRecord = newGene.fitness
+
     # Test print code
     if newGene.length != bestGene.length:
         print("================ "+str(j+1) +
