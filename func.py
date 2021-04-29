@@ -91,11 +91,13 @@ def sendNearbyCityList(nearbyCityList):
     nearbyCities = tuple(nearbyCities)
 
 
-def gendGenerationSpan(generationSpan):
+def gendGenerationSpan(generationSpan, popSize):
     global generation
     generation = generationSpan
     global currentGenerationLevel
     currentGenerationLevel = 0
+    global populationSize
+    populationSize = popSize
 
 
 '''##mini TSP###
@@ -524,3 +526,25 @@ def getBestGene(gene):
         if gene[i].fitness < gene[i+1].fitness:
             bestGene = gene[i+1]
     return bestGene
+
+
+def writeCSV(writer, bestGene):
+
+    length = []
+    length.append(bestGene.length)
+    city = []
+
+    gen = []
+    gen.append(generation)
+    popSize = []
+    popSize.append(populationSize)
+
+    writer.writerow(length)
+    writer.writerow(';')
+
+    writer.writerow(bestGene.order)
+    writer.writerow(';')
+    writer.writerow(gen)
+    writer.writerow(';')
+    writer.writerow(popSize)
+    writer.writerow(';;;')

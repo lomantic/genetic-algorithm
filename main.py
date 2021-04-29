@@ -3,6 +3,7 @@
 # print()
 import cgi
 import os
+import os.path
 import func
 import csv
 import sys
@@ -12,8 +13,8 @@ import sys
 cities = []
 distancePerCity = []
 nearbyCity = []
-generation = 1600  # generation span
-genCount = 400  # number of population
+generation = 20  # generation span
+genCount = 200  # number of population
 
 print("Reading TSP.csv ...")
 with open('TSP.csv', mode='r', newline='') as tsp:
@@ -43,7 +44,7 @@ print("cityDistance.csv Read complete")
 func.sendCityList(cities)
 func.sendTotalDistanceList(distancePerCity)
 func.sendNearbyCityList(nearbyCity)
-func.gendGenerationSpan(generation)
+func.gendGenerationSpan(generation, genCount)
 
 gen = []  # city travel order for single gen
 distance = 0.0  # total distance of single gene
@@ -108,7 +109,8 @@ for j in range(generation):
     else:
         recordGuardCount = recordGuardCount+1
         print("Record Guard Count : "+str(recordGuardCount))
-
+    print("mutaionRate:", end=' ')
+    print(1.0-(func.currentGenerationLevel/generation))
     # loop until gen span ends
     #
     # if identicalCount > breakCount or recordGuardCount > breakCount*2:
@@ -121,6 +123,40 @@ print("===================Final Gen=====================")
 bestGene.testPrint()
 if identicalCount > breakCount:
     print("BREAK : best result identical over " + str(identicalCount)+" times")
+
+
+print("\n saving data in previousReult.csv ...")
+with open('previousResults.csv', 'a', newline='') as storeResult:
+    writer = csv.writer(storeResult)
+
+    # wrtie previous records
+    # order : length-> gene order-> fitness-> generation -> gencount
+    func.writeCSV(writer, bestGene)
+print("complete saving data in previousReult.csv \n")
+
+print("checking previous best data...\n")
+
+
+if os.path.isfile('bestResults.csv'):
+    with open('bestResults.csv', 'r', newline='') as readBestRecord:
+        reader = csv.reader(readBestRecord)
+        for row in reader:
+            if row[0] != ';':
+                previousFileRecord = float(row[0])
+                print("previous record : "+str(previousFileRecord))
+                break
+else:
+    previousFileRecord = 99999.0
+
+
+if previousFileRecord > bestGene.length:
+    print("best record renewed..")
+    with open('bestResults.csv', 'w+', newline='') as overWriteResult:
+        writer = csv.writer(overWriteResult)
+        func.writeCSV(writer, bestGene)
+        print("new record saved in bestResults.csv\n")
+else:
+    print("Record guarded changes : NONE\n")
 
 '''
     bestGene.append(CandidateGene)
