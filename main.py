@@ -13,7 +13,7 @@ import sys
 cities = []
 distancePerCity = []
 nearbyCity = []
-generation = 20  # generation span
+generation = 1600  # generation span
 genCount = 200  # number of population
 
 print("Reading TSP.csv ...")
