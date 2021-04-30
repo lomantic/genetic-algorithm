@@ -15,7 +15,7 @@ distancePerCity = []
 nearbyCity = []
 generation = 1600  # generation span
 genCount = 200  # number of population
-searchPressure = 3  # pressure for fitness
+searchPressure = 2.5  # pressure for fitness
 
 print("Reading TSP.csv ...")
 with open('TSP.csv', mode='r', newline='') as tsp:
@@ -48,13 +48,12 @@ func.sendNearbyCityList(nearbyCity)
 func.sendSearchPressure(searchPressure)
 func.gendGenerationSpan(generation, genCount)
 
-
+genes = []  # store genelist
 gen = []  # city travel order for single gen
 distance = 0.0  # total distance of single gene
 fitness = 0.0  # fitness of single gene
 # survivors = 200  # number of genes survived in single generation
 # DHM/ILC crossover does not need survivor gene
-genes = []  # list of genes generated
 survivorGenes = []  # array of genes survived in one generation
 
 
@@ -81,9 +80,11 @@ func.calFitness(genes)
 bestGene = func.geneInfo([0], 999999, 0)
 identicalCount = 0  # same result count
 recordGuardCount = 0  # best record guard count
-breakCount = 9  # forbid infinity loop
+breakCount = 9
 newRecord = 0
-bestRecord = 0  # prevent excessive mutaion
+bestRecord = 0
+localOptimized = 0  # check whether localOptimized
+
 for j in range(generation):
     func.currentGenerationLevel = func.currentGenerationLevel+1
     # sort genes with wheelRoulette : count survivors
@@ -91,7 +92,12 @@ for j in range(generation):
     # DHM/ILC crossover does not need survivor gene
     # create new generation
     genes = func.newGeneration(genes, genCount)
+    if genes == -1:  # all genes identical local optimaized
+        localOptimized = 1
+        break
+
     newGene = func.getBestGene(genes)
+    newWorstGene = func.getWorstGene(genes)
     newRecord = newGene.fitness
 
     # Test print code
@@ -100,6 +106,7 @@ for j in range(generation):
               "th Gen ===========================")
         newGene.testPrint()
         if j > 0:  # do not print at 1st gen
+            print("\nWORST gene length : "+str(newWorstGene.length)+"\n")
             print("PREVIOUS BEST RECORD : "+str(bestGene.length))
         identicalCount = 0
     else:
@@ -116,14 +123,18 @@ for j in range(generation):
     print(1.0-(func.currentGenerationLevel/generation))
     # loop until gen span ends
     #
-    # if identicalCount > breakCount or recordGuardCount > breakCount*2:
-    #    break
+    if identicalCount > breakCount:
+        break
 
     print("\ncreating next gen...\n")
 
 
 print("===================Final Gen=====================")
 bestGene.testPrint()
+
+if localOptimized == 1:
+    print("local optimized >> BREAK\n")
+
 if identicalCount > breakCount:
     print("BREAK : best result identical over " + str(identicalCount)+" times")
 

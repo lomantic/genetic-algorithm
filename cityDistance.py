@@ -46,6 +46,7 @@ else:
         for cityDistanceList in totalDistanceList:
             writer.writerow(cityDistanceList)
 
+
 i = 0
 for nearList in nearbyCityList:
     for city in nearList:

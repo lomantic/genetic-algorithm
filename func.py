@@ -4,6 +4,7 @@ import operator
 from operator import itemgetter
 import numpy as np
 import csv
+import decimal
 
 # not organized with class
 
@@ -160,9 +161,14 @@ def calFitness(geneList):
     worstDistance = max(distanceList)
     bestDistance = min(distanceList)
 
-    for j in range(len(geneList)):
-        geneList[j].fitness = float(
-            (worstDistance-geneList[j].length) + ((worstDistance-bestDistance)/(k-1)))
+    if worstDistance-bestDistance > 100:
+        for j in range(len(geneList)):
+            geneList[j].fitness = float(
+                (worstDistance-geneList[j].length)/10)**k  # + ((worstDistance-bestDistance)/(k-1)))
+    else:
+        for j in range(len(geneList)):
+            geneList[j].fitness = float(
+                (worstDistance-geneList[j].length))**k  # + ((worstDistance-bestDistance)/(k-1)))
 
     return geneList
 
@@ -178,8 +184,12 @@ def topFitness(genes, superiorCount):
 
 def wheelRoulette(genes):
     totalFitness = float(sum(gene.fitness for gene in genes))
-    portions = [gene.fitness/totalFitness for gene in genes]
-    selectedGene = random.choices(genes, weights=portions, k=1)
+    if totalFitness != 0:
+        portions = [gene.fitness/totalFitness for gene in genes]
+        selectedGene = random.choices(genes, weights=portions, k=1)
+    else:
+        return -1  # totalFitness==0 local optimized
+
     return selectedGene[0]  # selectedGene[0] cuz random.choices returns list
     ''' # unproper wheelRoulette
     pick = random.uniform(0, max)
@@ -199,6 +209,8 @@ def sortGene(genes, geneCount):
     while i < geneCount:
         # if use superior genes-superiorCount
         sortedGene = wheelRoulette(genes)
+        if sortedGene == -1:
+            return -1  # all genes identical local optimized
         if i == 0:
             candidates.append(sortedGene)
         elif overlapKiller(candidates, sortedGene):
@@ -512,6 +524,8 @@ def newGeneration(geneList, geneCount):
 
     for i in range(geneCount//2):
         parent = sortGene(geneList, 2)
+        if parent == -1:
+            return -1  # all genes identical local optimized
         child = crossover(newGenerationGeneList, parent)
         for gene in child:
             newGenerationGeneList.append(gene)
@@ -532,6 +546,14 @@ def getBestGene(gene):
         if gene[i].fitness < gene[i+1].fitness:
             bestGene = gene[i+1]
     return bestGene
+
+
+def getWorstGene(gene):
+    worstGene = gene[0]
+    for i in range(len(gene)-2):
+        if gene[i].fitness > gene[i+1].fitness:
+            worstGene = gene[i+1]
+    return worstGene
 
 
 def writeCSV(writer, bestGene):
