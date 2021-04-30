@@ -15,6 +15,7 @@ distancePerCity = []
 nearbyCity = []
 generation = 1600  # generation span
 genCount = 200  # number of population
+searchPressure = 3  # pressure for fitness
 
 print("Reading TSP.csv ...")
 with open('TSP.csv', mode='r', newline='') as tsp:
@@ -44,7 +45,9 @@ print("cityDistance.csv Read complete")
 func.sendCityList(cities)
 func.sendTotalDistanceList(distancePerCity)
 func.sendNearbyCityList(nearbyCity)
+func.sendSearchPressure(searchPressure)
 func.gendGenerationSpan(generation, genCount)
+
 
 gen = []  # city travel order for single gen
 distance = 0.0  # total distance of single gene
@@ -130,7 +133,7 @@ with open('previousResults.csv', 'a', newline='') as storeResult:
     writer = csv.writer(storeResult)
 
     # wrtie previous records
-    # order : length-> gene order-> fitness-> generation -> gencount
+    # order : length-> gene order-> fitness-> generation -> gencount->searchPressure
     func.writeCSV(writer, bestGene)
 print("complete saving data in previousReult.csv \n")
 

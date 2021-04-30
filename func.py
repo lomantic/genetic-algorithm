@@ -91,6 +91,11 @@ def sendNearbyCityList(nearbyCityList):
     nearbyCities = tuple(nearbyCities)
 
 
+def sendSearchPressure(pressure):
+    global searchPressure
+    searchPressure = pressure
+
+
 def gendGenerationSpan(generationSpan, popSize):
     global generation
     generation = generationSpan
@@ -146,7 +151,8 @@ def calFitness(geneList):
     distanceList = []
     worstDistance = 0
     bestDistance = 0
-    k = 3  # choose k : 3 or 4  higher the k stronger the select pressure for fitness
+    # choose k : 3 or 4  higher the k stronger the select pressure for fitness
+    k = searchPressure
 
     for j in range(len(geneList)):
         distanceList.append(geneList[j].length)
@@ -538,6 +544,8 @@ def writeCSV(writer, bestGene):
     gen.append(generation)
     popSize = []
     popSize.append(populationSize)
+    pressure = []
+    pressure.append(searchPressure)
 
     writer.writerow(length)
     writer.writerow(';')
@@ -547,4 +555,6 @@ def writeCSV(writer, bestGene):
     writer.writerow(gen)
     writer.writerow(';')
     writer.writerow(popSize)
+    writer.writerow(';')
+    writer.writerow(pressure)
     writer.writerow(';;;')

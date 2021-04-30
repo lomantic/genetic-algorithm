@@ -25,6 +25,7 @@ print(information[1])
 print("\n length : "+str(information[0][0]))
 print("generation span : "+str(information[2][0]))
 print("population size per generation : "+str(information[3][0]))
+print("search pressure : "+str(information[4][0]))
 
 print("\n\n generating solution.csv... \n ")
 
