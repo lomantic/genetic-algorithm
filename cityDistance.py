@@ -1,6 +1,8 @@
 import csv
 import func
 from operator import itemgetter
+import os
+import os.path
 
 totalDistanceList = []  # 1000x1000 list of distance
 distanceList = []  # one city to other 999 cities distance list
@@ -35,13 +37,15 @@ for city1 in range(len(cities)):
         sorted(zip(idx, distanceList), key=itemgetter(1))[1:11])  # top 10 nearest
     distanceList.clear()
 
-with open('totalDistance.csv', 'w', newline='') as distanceList:
-    writer = csv.writer(distanceList)
+if os.path.isfile('totalDistance.csv'):
+    print("totalDistance.csv exists..")
+else:
+    with open('totalDistance.csv', 'w', newline='') as distanceList:
+        writer = csv.writer(distanceList)
 
-    for cityDistanceList in totalDistanceList:
-        writer.writerow(cityDistanceList)
+        for cityDistanceList in totalDistanceList:
+            writer.writerow(cityDistanceList)
 
-'''
 i = 0
 for nearList in nearbyCityList:
     for city in nearList:
@@ -59,9 +63,8 @@ for nearList in nearbyCityList:
 # city 0 nearest city is not needed cuz city0 is always the start
 nearbyCityIndexList = nearbyCityIndexList
 
-with open('cityDistance.csv', 'w', newline='') as cityList:
+with open('cityDistance.csv', 'w+', newline='') as cityList:
     writer = csv.writer(cityList)
 
     for cityIdxList in nearbyCityIndexList:
         writer.writerow(cityIdxList)
-'''
