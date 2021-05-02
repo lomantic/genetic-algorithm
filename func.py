@@ -1,10 +1,15 @@
 
+
 import random
 import operator
 from operator import itemgetter
 import numpy as np
 import csv
 import decimal
+import os
+import sys
+import time
+
 
 # not organized with class
 
@@ -554,6 +559,23 @@ def getWorstGene(gene):
         if gene[i].fitness > gene[i+1].fitness:
             worstGene = gene[i+1]
     return worstGene
+
+
+def restart():
+    print("argv was", sys.argv)
+    print("sys.executable was", sys.executable)
+    print("restart now")
+    os.execv(sys.executable, ['python'] + sys.argv)
+
+
+def countdown(countdownTime):
+    print("Restart waiting...")
+    while countdownTime:
+        mins, secs = divmod(countdownTime, 60)
+        timeformat = '{:02d}:{:02d}'.format(mins, secs)
+        print(timeformat, end='\r')
+        time.sleep(1)
+        countdownTime -= 1
 
 
 def writeCSV(writer, bestGene):

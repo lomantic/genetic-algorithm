@@ -14,8 +14,8 @@ cities = []
 distancePerCity = []
 nearbyCity = []
 generation = 1600  # generation span
-genCount = 200  # number of population
-searchPressure = 2.5  # pressure for fitness
+genCount = 400  # number of population
+searchPressure = 2.5  # pressure for fitness/
 
 print("Reading TSP.csv ...")
 with open('TSP.csv', mode='r', newline='') as tsp:
@@ -171,6 +171,10 @@ if previousFileRecord > bestGene.length:
         print("new record saved in bestResults.csv\n")
 else:
     print("Record guarded changes : NONE\n")
+
+func.countdown(10)
+func.restart()
+
 
 '''
     bestGene.append(CandidateGene)
